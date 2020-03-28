@@ -9,260 +9,37 @@ const context = canvas.getContext('2d');
 
 let screenEnabled = {};
 
-let score = -1;
-let bestScore = 0;
-
 // OBJECTS 
-// [MessageGetReady]
-const messageGetReady = {
-  sourceX: 134,
-  sourceY: 0,
-  width: 174,
-  height: 152,
-  posX: (canvas.width / 2) - 174 / 2,
-  posY: 50,
-  mDraw() {
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      this.posX, this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-  }
-}
+
+// [Score]
+import { Score } from "./classes/Score.js";
+const score = new Score(context, sprites, canvas);
 
 // [MessageGetReady]
-const messageGameOver = {
-  sourceX: 153,
-  sourceY: 153,
-  width: 188,
-  height: 38,
-  posX: (canvas.width / 2) - 174 / 2,
-  posY: 50,
-  mDraw() {
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      this.posX, this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-  }
-}
+import { MessageGetReady } from "./classes/MessageGetReady.js";
+const messageGetReady = new MessageGetReady(context, sprites, canvas);
 
-// [PipeUP]
-const pipeUP = {
-  sourceX: 52,
-  sourceY: 169,
-  width: 52,
-  height: 400,
-  posX: -100,
-  posY: 0,
-  mDraw() {
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      this.posX, this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-  }
-}
-
-// [PipeDOWN]
-const pipeDOWN = {
-  sourceX: 0,
-  sourceY: 169,
-  width: 52,
-  height: 400,
-  posX: -100,
-  posY: 0,
-  mDraw() {
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      this.posX, this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-  }
-}
-
-// [Pipes]
-const pipes = {
-  headSize: 25,
-  spaceBetween: 100,
-  numPipeSpeedUp: 10,
-  getMinPosY() {
-    return (pipes.headSize);
-  },
-  getMaxPosY() {
-    return (canvas.height - floor.height - pipes.headSize - this.spaceBetween);
-  },
-  getRandomPosY() {
-    min = this.getMinPosY();
-    max = this.getMaxPosY();
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    result = Math.floor(Math.random() * (max - min)) + min;
-    result = result - pipeUP.height;
-    // console.log("PIPEs getRandomPosY() - ","Mínimo:", min, "Máximo:", max, "Resultado:", result);
-  
-    return result;
-  },
-  spawn() {
-    pipeUP.posX = canvas.width;
-    pipeDOWN.posX = canvas.width;
-    pipeUP.posY = this.getRandomPosY();
-    pipeDOWN.posY = pipeUP.posY + pipeUP.height + this.spaceBetween;
-    score = score + 1
-    if(score % this.numPipeSpeedUp === 0 && score != 0){
-      screenEnabled.speed += 1
-    }
-    console.log("Score:", score, "Speed:", screenEnabled.speed);
-  },
-  update() {
-    pipeUP.posX = pipeUP.posX - screenEnabled.speed;
-    pipeDOWN.posX = pipeDOWN.posX - screenEnabled.speed;
-  },
-  mDraw() {
-    if(pipeUP.posX < (0 - pipeUP.width)) {
-      this.spawn();
-    }
-    pipeUP.mDraw();
-    pipeDOWN.mDraw();
-  }
-  
-}
+// [MessageGameOver]
+import { MessageGameOver } from "./classes/MessageGameOver.js";
+const messageGameOver = new MessageGameOver(context, sprites, canvas);
 
 // [Background]
-const background = {
-  sourceX: 390,
-  sourceY: 0,
-  width: 275,
-  height: 204,
-  posX: 0,
-  posY: (canvas.height - 204),
-  time: 1,
-  delay: 100,
-  update() {
-    this.time = this.time + 1;
-    if(this.time > (this.delay / screenEnabled.speed)) {
-      this.posX = this.posX - 1;
-      this.time = 1;
-    }
-  },
-  resetPosX() {
-    if(this.posX < (-this.width)) {
-      this.posX = this.posX + this.width;
-      console.log("Background - resetPosX() - PosX:", this.posX);
-    }
-  },
-  mDraw() {
-    context.fillStyle = '#70c5ce'
-    context.fillRect(0, 0, canvas.width, canvas.height)
-
-    this.resetPosX();
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      this.posX, this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-    
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      (this.posX + this.width), this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      (this.posX + (this.width*2)), this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-  }  
-}
+import { Background } from "./classes/Background.js";
+const background = new Background(context, sprites, canvas);
 
 // [Floor]
-const floor = {
-  sourceX: 0,
-  sourceY: 610,
-  width: 224,
-  height: 112,
-  posX: 0,
-  posY: (canvas.height - 112),
-  update() {
-    this.posX = this.posX - screenEnabled.speed;
-  },
-  resetPosX() {
-    if(this.posX < (-this.width)) {
-      this.posX = this.posX + this.width;
-      // console.log("Floor - resetPosX() - PosX:", this.posX);
-    }
-  },
-  mDraw() {
-    this.resetPosX();
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      this.posX, this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-    
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      (this.posX + this.width), this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
+import { Floor } from "./classes/Floor.js";
+const floor = new Floor(context, sprites, canvas);
 
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      (this.posX + this.width*2), this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-  }  
-}
+// [Pipes]
+import { DoublePipe } from "./classes/DoublePipe.js";
+const pipes = new DoublePipe(context, sprites, canvas, floor);
 
 // [FlappyBird]
-const flappyBird = {
-  sourceX: 0,
-  sourceY: 0,
-  width: 34,
-  height: 24,
-  posX: 10,
-  posY: 50,
-  speedX: 0,
-  speedY: 1,
-  gravity: 0.25,
-  collisionTolerance: 3,
-  update() {
-    this.speedY = this.speedY + this.gravity;
-    this.posY = this.posY + this.speedY;
-    this.posX = this.posX + this.speedX;
-  },
-  mDraw() {
-    //flappyBird.update();
-    context.drawImage(
-      sprites,
-      this.sourceX, this.sourceY, // Sprite X, Sprite Y
-      this.width, this.height, // Tamanho de recorte na Sprite
-      this.posX, this.posY, // Posição na tela
-      this.width, this.height // Tamanho da imagem na tela
-    );
-  }
-}
+import {FlappyBird} from "./classes/FlappyBird.js";
+const flappyBird = new FlappyBird(context, sprites, canvas);
+
+
 
 // [Screens]
 const Screens = {
@@ -288,7 +65,7 @@ Screens.GAME = {
   stoped: false,
   click() {
     if(!this.stoped) {
-      flappyBird.speedY = -5
+      flappyBird.click();
       // console.log("Flappy PosY:", flappyBird.posY, "Flappy PosX:", flappyBird.posX)
     }
   },
@@ -300,10 +77,14 @@ Screens.GAME = {
   },
   update() {
     this.iscollided();
-    background.update();
-    pipes.update();
-    floor.update();
-    flappyBird.update();
+    if((pipes.pipeUP.posX + pipes.pipeUP.width) < 0) {
+      pipes.spawn();
+      score.addScore(1);
+    }
+    background.update(this.speed);
+    pipes.update(this.speed);
+    floor.update(this.speed);
+    flappyBird.update(this.speed);
   },
   iscollided() {
     if(flappyBird.posY < 0) {
@@ -317,12 +98,12 @@ Screens.GAME = {
       this.stopGame();
 
       console.log("Colisão - Bateu no Chão");
-    } else if ( (flappyBird.posX + flappyBird.width - flappyBird.collisionTolerance) > pipeUP.posX && (flappyBird.posX + flappyBird.collisionTolerance) < (pipeUP.posX + pipeUP.width) ) {
-      if( (flappyBird.posY + flappyBird.collisionTolerance) < (pipeUP.posY + pipeUP.height) ) {
+    } else if ( (flappyBird.posX + flappyBird.width - flappyBird.collisionTolerance) >  pipes.pipeUP.posX && (flappyBird.posX + flappyBird.collisionTolerance) < ( pipes.pipeUP.posX +  pipes.pipeUP.width) ) {
+      if( (flappyBird.posY + flappyBird.collisionTolerance) < ( pipes.pipeUP.posY +  pipes.pipeUP.height) ) {
         this.stopGame();
 
         console.log("Colisão - Bateu no Cano de Cima");
-      } else if((flappyBird.posY + flappyBird.height - flappyBird.collisionTolerance) > pipeDOWN.posY) {
+      } else if((flappyBird.posY + flappyBird.height - flappyBird.collisionTolerance) >  pipes.pipeDOWN.posY) {
         this.stopGame();
 
         console.log("Colisão - Bateu no Cano de Baixo");
@@ -331,16 +112,13 @@ Screens.GAME = {
   },
   stopGame() {
     screenEnabled.speed = 0;
-    flappyBird.speedY = 0;
-    flappyBird.speedX = 0;
-    flappyBird.gravity = 0;
+    flappyBird.stop();
     this.stoped = true;
-    if(score > bestScore) {
-      bestScore = score;
-    }
-    console.log("Score:", score, "Best Score:", bestScore);
-    console.log("PipeUP posX", pipeUP.posX,"PipeDOWN posX", pipeDOWN.posX);
-    console.log("PipeUP posY", pipeUP.posY,"PipeDOWN posY", pipeDOWN.posY);
+    
+    score.print();
+    
+    console.log("PipeUP posX", pipes.pipeUP.posX,"PipeDOWN posX", pipes.pipeDOWN.posX);
+    console.log("PipeUP posY", pipes.pipeUP.posY,"pipeDOWN posY", pipes.pipeDOWN.posY);
     changeToScreen(Screens.GAMEOVER);
   }
 }
@@ -348,14 +126,9 @@ Screens.GAME = {
 Screens.GAMEOVER = {
   speed: 0,
   click() {
-    flappyBird.posX = 10;
-    flappyBird.posY = 50;
-    flappyBird.speedY = 0;
-    flappyBird.speedX = 0;
-    flappyBird.gravity = 0.25;
-    pipeUP.posX = -100;
-    pipeDOWN.posX = -100;
-    score = -1;
+    flappyBird.reset();
+    pipes.reset();
+    score.reset();
     
     Screens.GAME.speed = 2;
     Screens.GAME.stoped = false;
@@ -400,4 +173,4 @@ loop();
 //   else if(this.posY > (floor.posY - this.height)) {
 //     this.posY = (floor.posY - this.height);
 //   }
-// },
+// }
