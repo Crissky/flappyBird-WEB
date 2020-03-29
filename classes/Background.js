@@ -53,5 +53,13 @@ export class Background {
             (this.posX + (this.width*2)), this.posY, // Posição na tela
             this.width, this.height // Tamanho da imagem na tela
         );
-      }
+    }
+    getArea() {
+        return {
+            x1: 0,
+            x2: this.canvas.width,
+            y1: 0,
+            y2: this.canvas.height
+        }
+    }
 }

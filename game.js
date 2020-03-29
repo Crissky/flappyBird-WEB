@@ -9,8 +9,11 @@ const context = canvas.getContext('2d');
 
 let screenEnabled = {};
 
-// OBJECTS 
+// FUNCTIONS
+import { isCollision } from "./libs/Collision.js";
 
+
+// OBJECTS 
 // [Score]
 import { Score } from "./classes/Score.js";
 const score = new Score(context, sprites, canvas);
@@ -65,15 +68,9 @@ Screens.GAME = {
   stoped: false,
   click() {
     if(!this.stoped) {
-      flappyBird.click();
+      flappyBird.click(this.speed);
       // console.log("Flappy PosY:", flappyBird.posY, "Flappy PosX:", flappyBird.posX)
     }
-  },
-  mDraw() {
-    background.mDraw();
-    pipes.mDraw();
-    floor.mDraw();
-    flappyBird.mDraw();
   },
   update() {
     this.iscollided();
@@ -86,29 +83,9 @@ Screens.GAME = {
     floor.update(this.speed);
     flappyBird.update(this.speed);
   },
-  iscollided() {
-    if(flappyBird.posY < 0) {
-      flappyBird.posY = 0;
-      if( flappyBird.speedY < 0) {
-        flappyBird.speedY = 0;
-      }
-      console.log("Colisão - Bateu no Top");
-    } else if (flappyBird.posY > (floor.posY - flappyBird.height)) {
-      flappyBird.posY = (floor.posY - flappyBird.height);
-      this.stopGame();
-
-      console.log("Colisão - Bateu no Chão");
-    } else if ( (flappyBird.posX + flappyBird.width - flappyBird.collisionTolerance) >  pipes.pipeUP.posX && (flappyBird.posX + flappyBird.collisionTolerance) < ( pipes.pipeUP.posX +  pipes.pipeUP.width) ) {
-      if( (flappyBird.posY + flappyBird.collisionTolerance) < ( pipes.pipeUP.posY +  pipes.pipeUP.height) ) {
-        this.stopGame();
-
-        console.log("Colisão - Bateu no Cano de Cima");
-      } else if((flappyBird.posY + flappyBird.height - flappyBird.collisionTolerance) >  pipes.pipeDOWN.posY) {
-        this.stopGame();
-
-        console.log("Colisão - Bateu no Cano de Baixo");
-      }
-    } 
+  reset() {
+    this.speed = 2;
+    this.stoped = false;
   },
   stopGame() {
     screenEnabled.speed = 0;
@@ -120,6 +97,34 @@ Screens.GAME = {
     console.log("PipeUP posX", pipes.pipeUP.posX,"PipeDOWN posX", pipes.pipeDOWN.posX);
     console.log("PipeUP posY", pipes.pipeUP.posY,"pipeDOWN posY", pipes.pipeDOWN.posY);
     changeToScreen(Screens.GAMEOVER);
+  },
+  mDraw() {
+    background.mDraw();
+    pipes.mDraw();
+    floor.mDraw();
+    flappyBird.mDraw();
+    score.mDraw();
+  },
+  iscollided() {
+    if(flappyBird.posY < 0) {
+      flappyBird.posY = 0;
+      if( flappyBird.speedY < 0) {
+        flappyBird.speedY = 0;
+      }
+      console.log("Colisão - Bateu no Top");
+    }
+    
+    if ( isCollision(flappyBird, floor) ) {
+      flappyBird.posY = (floor.posY - flappyBird.height);
+      this.stopGame();
+      console.log("Colisão - Bateu no Chão");
+    } else if ( isCollision(flappyBird, pipes.pipeUP) ) {
+        this.stopGame();
+        console.log("Colisão - Bateu no Cano de Cima");
+    } else if( isCollision(flappyBird, pipes.pipeDOWN) ) {
+        this.stopGame();
+        console.log("Colisão - Bateu no Cano de Baixo");
+    } 
   }
 }
 
@@ -129,9 +134,8 @@ Screens.GAMEOVER = {
     flappyBird.reset();
     pipes.reset();
     score.reset();
+    Screens.GAME.reset();
     
-    Screens.GAME.speed = 2;
-    Screens.GAME.stoped = false;
     changeToScreen(Screens.GAME)
   },
   mDraw() {
@@ -140,6 +144,7 @@ Screens.GAMEOVER = {
     floor.mDraw();
     flappyBird.mDraw();
     messageGameOver.mDraw();
+    score.mDraw();
   },
   update() {}
 }
@@ -163,14 +168,3 @@ window.addEventListener('click', function() {
 
 changeToScreen(Screens.START);
 loop();
-
-// updatePosY() {
-//   this.posY = this.posY + this.speedY;
-//   if(this.posY < 0) {
-//     this.posY = 0;
-//     this.speedY = 0;
-//   }
-//   else if(this.posY > (floor.posY - this.height)) {
-//     this.posY = (floor.posY - this.height);
-//   }
-// }

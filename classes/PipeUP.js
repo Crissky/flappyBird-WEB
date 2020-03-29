@@ -26,5 +26,13 @@ export class PipeUP {
             this.posX, this.posY, // Posição na tela
             this.width, this.height // Tamanho da imagem na tela
         );
-      }
+    }
+    getArea() {
+        return {
+            x1: this.posX,
+            x2: (this.posX + this.width),
+            y1: this.posY,
+            y2: (this.posY + this.height)
+        }
+    }
 }

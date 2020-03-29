@@ -1,5 +1,9 @@
 export class Score {
     constructor(context, sprites, canvas) {
+        context.font = '900 18px Arial';
+        context.textAlign = 'end';
+        this.posX = 10;
+        this.posY = 20;
         this.score = -1;
         this.bestScore = 0;
         this.context = context;
@@ -8,6 +12,14 @@ export class Score {
     }
     reset() {
         this.score = -1;
+    }
+    mDraw() {
+        this.context.fillStyle = '#ffffff';
+        this.context.fillText( ("Score: " + this.score), this.canvas.width - this.posX, this.posY );
+        this.context.strokeText( ("Score: " + this.score), this.canvas.width - this.posX, this.posY );
+        this.context.fillStyle = '#fde217';
+        this.context.fillText( ("Best: " + this.bestScore), this.canvas.width - this.posX, (this.posY + 20) );
+        this.context.strokeText( ("Best: " + this.bestScore), this.canvas.width - this.posX, (this.posY + 20) );
     }
     getScore() {
         let score = 0;
