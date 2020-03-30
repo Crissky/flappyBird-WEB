@@ -21,29 +21,17 @@ export class Floor {
     }
     mDraw() {
         this.resetPosX();
-        this.context.drawImage(
-            this.sprites,
-            this.sourceX, this.sourceY, // Sprite X, Sprite Y
-            this.width, this.height, // Tamanho de recorte na Sprite
-            this.posX, this.posY, // Posição na tela
-            this.width, this.height // Tamanho da imagem na tela
-        );
         
-        this.context.drawImage(
-            this.sprites,
-            this.sourceX, this.sourceY, // Sprite X, Sprite Y
-            this.width, this.height, // Tamanho de recorte na Sprite
-            (this.posX + this.width), this.posY, // Posição na tela
-            this.width, this.height // Tamanho da imagem na tela
-        );
-    
-        this.context.drawImage(
-            this.sprites,
-            this.sourceX, this.sourceY, // Sprite X, Sprite Y
-            this.width, this.height, // Tamanho de recorte na Sprite
-            (this.posX + this.width*2), this.posY, // Posição na tela
-            this.width, this.height // Tamanho da imagem na tela
-        );
+        let maxLoop = Math.ceil( (this.canvas.width / this.width)) + 1;
+        for (let index = 0; index < maxLoop; index++) {
+            this.context.drawImage(
+                this.sprites,
+                this.sourceX, this.sourceY, // Sprite X, Sprite Y
+                this.width, this.height, // Tamanho de recorte na Sprite
+                (this.posX + (this.width * index)), this.posY, // Posição na tela
+                this.width, this.height // Tamanho da imagem na tela
+            );        
+        }
     }
     getArea() {
         return {

@@ -9,7 +9,10 @@ class FlappyBird {
         this.speedX = 0;
         this.speedY = 1;
         this.gravity = 0.2;
-        this.collisionTolerance = 3;
+        this.collisionTolerance = 4;
+        this.maxDegree = 15;
+        this.currentDegree = 0;
+        this.incrementDegree = (15/4);
         this.context = context;
         this.sprites = sprites;
         this.canvas = canvas;
@@ -40,13 +43,23 @@ class FlappyBird {
         this.gravity = 0;
     }
     mDraw() {
+        if(this.speedY < 0 && this.currentDegree > this.maxDegree * (-1)){
+            this.currentDegree = this.currentDegree - this.incrementDegree;
+        } else if(this.speedY > 0 && this.currentDegree < this.maxDegree){
+            this.currentDegree = this.currentDegree + this.incrementDegree;
+        }
+        this.context.save();
+        this.context.translate( (this.posX + (this.width / 2) ), ( this.posY + (this.height / 2) ) );
+        this.context.rotate ((Math.PI / 180) * this.currentDegree);
         this.context.drawImage(
-          this.sprites,
-          this.sourceX, this.sourceY, // Sprite X, Sprite Y
-          this.width, this.height, // Tamanho de recorte na Sprite
-          this.posX, this.posY, // Posição na tela
-          this.width, this.height // Tamanho da imagem na tela
+            this.sprites,
+            this.sourceX, this.sourceY, // Sprite X, Sprite Y
+            this.width, this.height, // Tamanho de recorte na Sprite
+            (this.width / 2)*(-1), (this.height / 2)*(-1), // Posição na tela
+            this.width, this.height // Tamanho da imagem na tela
         );
+        this.context.restore();
+        
     }
     getArea() {
         return {

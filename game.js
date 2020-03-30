@@ -7,11 +7,16 @@ sprites.src = './sprites.png';
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
+// Screen Size
+const height = (window.innerHeight+100) > 600 ? 600 : (window.innerHeight-100) < 580 ? 480 : (window.innerHeight-100);
+const width = (window.innerWidth-100) < 320 ? 320 : (window.innerWidth-100);
+context.canvas.width =  width;
+context.canvas.height = height
+
 let screenEnabled = {};
 
 // FUNCTIONS
 import { isCollision } from "./libs/Collision.js";
-
 
 // OBJECTS 
 // [Score]
@@ -54,7 +59,6 @@ const Screens = {
     },
     mDraw() {
       background.mDraw();
-      pipes.mDraw();
       floor.mDraw();
       flappyBird.mDraw();
       messageGetReady.mDraw();
@@ -73,36 +77,42 @@ Screens.GAME = {
     }
   },
   update() {
-    this.iscollided();
-    if((pipes.pipeUP.posX + pipes.pipeUP.width) < 0) {
-      pipes.spawn();
-      score.addScore(1);
-    }
     background.update(this.speed);
     pipes.update(this.speed);
     floor.update(this.speed);
     flappyBird.update(this.speed);
+    this.iscollided();
+    if((pipes.pipeUPList[0].posX + pipes.pipeUPList[0].width) < 0) {
+      pipes.removeFirstPipe();
+      score.addScore(1);
+      if(score.getScore() % 10 === 0){
+        this.speed += 0.5;
+        score.addLevel(1);
+      }
+    }
+    
   },
   reset() {
     this.speed = 2;
     this.stoped = false;
   },
   stopGame() {
+    console.log("Speed:", this.speed);
     screenEnabled.speed = 0;
     flappyBird.stop();
     this.stoped = true;
     
     score.print();
     
-    console.log("PipeUP posX", pipes.pipeUP.posX,"PipeDOWN posX", pipes.pipeDOWN.posX);
-    console.log("PipeUP posY", pipes.pipeUP.posY,"pipeDOWN posY", pipes.pipeDOWN.posY);
+    console.log("PipeUP posX", pipes.pipeUPList[0].posX, "PipeDOWN posX", pipes.pipeDOWNList[0].posX);
+    console.log("PipeUP posY", pipes.pipeUPList[0].posY, "pipeDOWN posY", pipes.pipeDOWNList[0].posY);
     changeToScreen(Screens.GAMEOVER);
   },
   mDraw() {
     background.mDraw();
+    flappyBird.mDraw();
     pipes.mDraw();
     floor.mDraw();
-    flappyBird.mDraw();
     score.mDraw();
   },
   iscollided() {
@@ -118,13 +128,13 @@ Screens.GAME = {
       flappyBird.posY = (floor.posY - flappyBird.height);
       this.stopGame();
       console.log("Colisão - Bateu no Chão");
-    } else if ( isCollision(flappyBird, pipes.pipeUP) ) {
+    } else if ( isCollision(flappyBird, pipes.pipeUPList[0]) ) {
         this.stopGame();
         console.log("Colisão - Bateu no Cano de Cima");
-    } else if( isCollision(flappyBird, pipes.pipeDOWN) ) {
+    } else if( isCollision(flappyBird, pipes.pipeDOWNList[0]) ) {
         this.stopGame();
         console.log("Colisão - Bateu no Cano de Baixo");
-    } 
+    }
   }
 }
 
@@ -140,9 +150,9 @@ Screens.GAMEOVER = {
   },
   mDraw() {
     background.mDraw();
+    flappyBird.mDraw();
     pipes.mDraw();
     floor.mDraw();
-    flappyBird.mDraw();
     messageGameOver.mDraw();
     score.mDraw();
   },
@@ -165,6 +175,14 @@ window.addEventListener('click', function() {
     screenEnabled.click();
   }
 });
+
+document.body.onkeyup = function(e){
+  if(e.keyCode == 32){
+    if(screenEnabled.click) {
+      screenEnabled.click();
+    }
+  }
+}
 
 changeToScreen(Screens.START);
 loop();

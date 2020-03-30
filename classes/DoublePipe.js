@@ -4,48 +4,91 @@ import { PipeDOWN } from "./PipeDOWN.js";
 export class DoublePipe {
     constructor(context, sprites, canvas, floor) {
         this.headSize = 25;
-        this.spaceBetween = 100;
+        this.distanceBetweenX = 500;
+        this.distanceBetweenY = 100;
         this.numPipeSpeedUp = 10;
         this.context = context;
         this.sprites = sprites;
         this.canvas = canvas;
-        this.pipeUP = new PipeUP(context, sprites, canvas);
-        this.pipeDOWN = new PipeDOWN(context, sprites, canvas);
+        this.pipeUPList = new Array();
+        this.pipeDOWNList = new Array();
         this.floor = floor;
+        // this.pipeUP = new PipeUP(context, sprites, canvas);
+        // this.pipeDOWN = new PipeDOWN(context, sprites, canvas);
     }
     getMinPosY() { // Menor Posição do Cano Superior
         return this.headSize;
     }
     getMaxPosY() { // Maior Posição do Cano Superior
-        return (this.canvas.height - this.floor.height - this.headSize - this.spaceBetween);
+        return (this.canvas.height - this.floor.height - this.headSize - this.distanceBetweenY);
     }
-    getRandomPosY() {
+    getRandomPosY(pipeUP) {
         let min = this.getMinPosY();
         let max = this.getMaxPosY();
         min = Math.ceil(min);
         max = Math.floor(max);
         let result = Math.floor(Math.random() * (max - min)) + min;
-        result = result - this.pipeUP.height;
-        // console.log("PIPEs getRandomPosY() - ","Mínimo:", min, "Máximo:", max, "Resultado:", result);
+        result = result - pipeUP.height;
       
         return result;
     }
     spawn() {
-        this.pipeUP.posX = this.canvas.width;
-        this.pipeDOWN.posX = this.canvas.width;
-        this.pipeUP.posY = this.getRandomPosY();
-        this.pipeDOWN.posY = this.pipeUP.posY + this.pipeUP.height + this.spaceBetween;
+        this.appendPipes();
+    }
+    appendPipes(){
+        let pipeUP = new PipeUP(this.context, this.sprites, this.canvas);
+        let pipeDOWN = new PipeDOWN(this.context, this.sprites, this.canvas);
+        pipeUP.posX = this.canvas.width;
+        pipeDOWN.posX = this.canvas.width;
+        pipeUP.posY = this.getRandomPosY(pipeUP);
+        pipeDOWN.posY = pipeUP.posY + pipeUP.height + this.distanceBetweenY;
+
+        this.pipeUPList.push(pipeUP);
+        this.pipeDOWNList.push(pipeDOWN);        
+    }
+    removeFirstPipe(){
+        this.pipeUPList.shift();
+        this.pipeDOWNList.shift();
+    }
+    movePosX(ScreenSpeed){
+        for (let index = 0; index < this.pipeUPList.length; index++) {
+            this.pipeUPList[index].posX =  this.pipeUPList[index].posX - ScreenSpeed;
+            this.pipeDOWNList[index].posX =  this.pipeUPList[index].posX;
+        }
+    }
+    movePosY(ScreenSpeed){
+        ScreenSpeed = Math.floor(ScreenSpeed / 4);
+        for (let index = 0; index < this.pipeUPList.length; index++) {
+            if((this.pipeUPList[index].posY + this.pipeUPList[index].height) <= this.getMinPosY()){
+                this.pipeUPList[index].directionY = -1;
+            } else if ((this.pipeUPList[index].posY + this.pipeUPList[index].height) >= this.getMaxPosY()){
+                this.pipeUPList[index].directionY = 1;
+            }
+            this.pipeUPList[index].posY =  this.pipeUPList[index].posY - (ScreenSpeed * this.pipeUPList[index].directionY);
+            this.pipeDOWNList[index].posY =  this.pipeUPList[index].posY + this.pipeUPList[index].height + this.distanceBetweenY;
+        }
     }
     update(ScreenSpeed) {
-        this.pipeUP.posX = this.pipeUP.posX - ScreenSpeed;
-        this.pipeDOWN.posX = this.pipeUP.posX;
+        if(this.pipeUPList.length < 1) {
+            this.spawn();
+        }
+        if(this.pipeUPList.slice(-1)[0].posX < (this.canvas.width - this.distanceBetweenX) ){
+            this.spawn();
+        }
+        if((this.pipeUPList[0].posX + this.pipeUPList[0].width) < 0) {
+            this.removeFirstPipe();
+        }
+        this.movePosX(ScreenSpeed);
+        this.movePosY(ScreenSpeed);
     }
     reset() {
-        this.pipeUP.reset();
-        this.pipeDOWN.reset();
+        this.pipeUPList = new Array();
+        this.pipeDOWNList = new Array();
     }
     mDraw() {
-        this.pipeUP.mDraw();
-        this.pipeDOWN.mDraw();
+        for (let index = 0; index < this.pipeUPList.length; index++) {
+            this.pipeUPList[index].mDraw();
+            this.pipeDOWNList[index].mDraw();
+        }
     }
 }

@@ -6,6 +6,7 @@ export class PipeUP {
         this.height = 400;
         this.posX = -100;
         this.posY = 0;
+        this.directionY = 1;
         this.context = context;
         this.sprites = sprites;
         this.canvas = canvas;
