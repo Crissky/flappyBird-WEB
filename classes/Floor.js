@@ -35,8 +35,8 @@ export class Floor {
     }
     getArea() {
         return {
-            x1: this.posX,
-            x2: (this.posX + this.width),
+            x1: 0,
+            x2: this.canvas.width,
             y1: this.posY,
             y2: (this.posY + this.height)
         }

@@ -16,7 +16,7 @@ context.canvas.height = height
 let screenEnabled = {};
 
 // FUNCTIONS
-import { isCollision } from "./libs/Collision.js";
+import { isCollision } from "./utils/Collision.js";
 
 // OBJECTS 
 // [Score]
