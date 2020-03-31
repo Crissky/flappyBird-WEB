@@ -85,7 +85,7 @@ Screens.GAME = {
     if((pipes.pipeUPList[0].posX + pipes.pipeUPList[0].width) < 0) {
       pipes.removeFirstPipe();
       score.addScore(1);
-      if(score.getScore() % 10 === 0){
+      if(score.getScore() % 5 === 0){
         this.speed += 0.5;
         score.addLevel(1);
       }

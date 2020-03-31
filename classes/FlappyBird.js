@@ -16,6 +16,11 @@ class FlappyBird {
         this.context = context;
         this.sprites = sprites;
         this.canvas = canvas;
+        this.currentFrame = 0;
+        this.maxFrames = 3;
+        this.delayFrame = 20;
+        this.currentTimeFrame = 0;
+        this.defaultSourceY = 26;
     }
     click(ScreenSpeed) {
         this.speedY = -5 - (ScreenSpeed * 0.40);
@@ -24,6 +29,11 @@ class FlappyBird {
         this.speedY = this.speedY + this.gravity + (ScreenSpeed * 0.05);
         this.posY = this.posY + this.speedY;
         this.posX = this.posX + this.speedX;
+        
+        this.updateFrame(ScreenSpeed);
+        if(this.speedY < 0){
+            this.updateFrame(ScreenSpeed);
+        }
     }
     reset() {
         this.sourceX = 0;
@@ -60,6 +70,13 @@ class FlappyBird {
         );
         this.context.restore();
         
+    }
+    updateFrame(ScreenSpeed){
+        this.currentTimeFrame = ++this.currentTimeFrame % Math.ceil(this.delayFrame / ScreenSpeed);
+        if(this.currentTimeFrame === 0){
+            this.currentFrame = ++this.currentFrame % this.maxFrames;
+            this.sourceY = this.currentFrame * this.defaultSourceY;
+        }
     }
     getArea() {
         return {
