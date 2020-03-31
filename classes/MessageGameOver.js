@@ -5,7 +5,7 @@ export class MessageGameOver {
         this.width = 188;
         this.height = 38;
         this.posX = (canvas.width / 2) - 174 / 2;
-        this.posY = 50;
+        this.posY = 100;
         this.collisionTolerance = 3;
         this.context = context;
         this.sprites = sprites;

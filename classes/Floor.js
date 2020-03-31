@@ -16,7 +16,6 @@ export class Floor {
     resetPosX() {
         if(this.posX < (-this.width)) {
             this.posX = this.posX + this.width;
-            // console.log("Floor - resetPosX() - PosX:", this.posX);
         }
     }
     mDraw() {

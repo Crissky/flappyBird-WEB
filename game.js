@@ -7,9 +7,12 @@ sprites.src = './sprites.png';
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
+const paddingX = window.innerWidth > 800 ? 100 : 4;
+const paddingY = 4;
+
 // Screen Size
-const height = (window.innerHeight+100) > 600 ? 600 : (window.innerHeight-100) < 580 ? 480 : (window.innerHeight-100);
-const width = (window.innerWidth-100) < 320 ? 320 : (window.innerWidth-100);
+const height = (window.innerHeight+paddingY) > 600 ? 600 : (window.innerHeight-paddingY) < (480+paddingY) ? 480 : (window.innerHeight-paddingY);
+const width = (window.innerWidth-paddingX) < 320 ? 320 : (window.innerWidth-paddingX);
 context.canvas.width =  width;
 context.canvas.height = height
 

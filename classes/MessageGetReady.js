@@ -5,7 +5,7 @@ export class MessageGetReady {
         this.width = 174;
         this.height = 152;
         this.posX = (canvas.width / 2) - 174 / 2;
-        this.posY = 50;
+        this.posY = 100;
         this.context = context;
         this.sprites = sprites;
         this.canvas = canvas;
