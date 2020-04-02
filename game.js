@@ -156,13 +156,18 @@ Screens.GAME = {
 
 Screens.GAMEOVER = {
   speed: 0,
+  sleepTime: 30,
   click() {
+    if(this.sleepTime > 0){
+      return;
+    }
     flappyBird.reset();
     pipes.reset();
     score.reset();
     Screens.GAME.reset();
     
     music.play();
+    this.sleepTime = 30;
     changeToScreen(Screens.GAME)
   },
   mDraw() {
@@ -172,6 +177,7 @@ Screens.GAMEOVER = {
     floor.mDraw();
     messageGameOver.mDraw();
     score.mDraw();
+    this.sleepTime -= 1;
   },
   update() {}
 }
