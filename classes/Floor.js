@@ -1,5 +1,6 @@
 export class Floor {
-    constructor (context, sprites, canvas) {
+    constructor(context, sprites, canvas, debug=false) {
+        this.debugMode = debug;
         this.sourceX = 0;
         this.sourceY = 610;
         this.width = 224;
@@ -31,6 +32,16 @@ export class Floor {
                 this.width, this.height // Tamanho da imagem na tela
             );        
         }
+        if(this.debugMode === true){
+            this.debugRect();
+        }
+    }
+    debugRect() {
+        this.context.globalAlpha = 0.5;
+        this.context.fillStyle = '#ff0000';
+        let collisionRect = this.getArea();
+        this.context.fillRect(collisionRect.x1, collisionRect.y1, (collisionRect.x2 - collisionRect.x1), (collisionRect.y2 - collisionRect.y1));
+        this.context.globalAlpha = 1.0;
     }
     getArea() {
         return {

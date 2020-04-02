@@ -18,46 +18,30 @@ export class Background {
             this.posX = this.posX - 1;
             this.time = 0;
         }
-      }
-      resetPosX() {
+    }
+    resetPosX() {
         if(this.posX < (-this.width)) {
             this.posX = this.posX + this.width;
             console.log("Background - resetPosX() - PosX:", this.posX);
         }
-      }
-      mDraw() {
-            this.context.fillStyle = '#70c5ce';
-            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    mDraw() {
+        this.context.fillStyle = '#70c5ce';
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            this.resetPosX();
+        this.resetPosX();
+        
+        let maxLoop = Math.ceil( (this.canvas.width / this.width)) + 1;
+        for (let index = 0; index < maxLoop; index++) {
+            this.context.drawImage(
+                this.sprites,
+                this.sourceX, this.sourceY, // Sprite X, Sprite Y
+                this.width, this.height, // Tamanho de recorte na Sprite
+                (this.posX + (this.width * index)), this.posY, // Posição na tela
+                this.width, this.height // Tamanho da imagem na tela
+            );
             
-            let maxLoop = Math.ceil( (this.canvas.width / this.width)) + 1;
-            for (let index = 0; index < maxLoop; index++) {
-                this.context.drawImage(
-                    this.sprites,
-                    this.sourceX, this.sourceY, // Sprite X, Sprite Y
-                    this.width, this.height, // Tamanho de recorte na Sprite
-                    (this.posX + (this.width * index)), this.posY, // Posição na tela
-                    this.width, this.height // Tamanho da imagem na tela
-                );
-                
-            }
-            
-        // this.context.drawImage(
-        //     this.sprites,
-        //     this.sourceX, this.sourceY, // Sprite X, Sprite Y
-        //     this.width, this.height, // Tamanho de recorte na Sprite
-        //     (this.posX + this.width), this.posY, // Posição na tela
-        //     this.width, this.height // Tamanho da imagem na tela
-        // );
-    
-        // this.context.drawImage(
-        //     this.sprites,
-        //     this.sourceX, this.sourceY, // Sprite X, Sprite Y
-        //     this.width, this.height, // Tamanho de recorte na Sprite
-        //     (this.posX + (this.width*2)), this.posY, // Posição na tela
-        //     this.width, this.height // Tamanho da imagem na tela
-        // );
+        }
     }
     getArea() {
         return {

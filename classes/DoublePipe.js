@@ -2,7 +2,8 @@ import { PipeUP } from "./PipeUP.js";
 import { PipeDOWN } from "./PipeDOWN.js";
 
 export class DoublePipe {
-    constructor(context, sprites, canvas, floor) {
+    constructor(context, sprites, canvas, floor, debug) {
+        this.debugMode = debug;
         this.headSize = 25;
         this.distanceBetweenX = 500;
         this.distanceBetweenY = 100;
@@ -13,8 +14,6 @@ export class DoublePipe {
         this.pipeUPList = new Array();
         this.pipeDOWNList = new Array();
         this.floor = floor;
-        // this.pipeUP = new PipeUP(context, sprites, canvas);
-        // this.pipeDOWN = new PipeDOWN(context, sprites, canvas);
     }
     getMinPosY() { // Menor Posição do Cano Superior
         return this.headSize;
@@ -36,8 +35,8 @@ export class DoublePipe {
         this.appendPipes();
     }
     appendPipes(){
-        let pipeUP = new PipeUP(this.context, this.sprites, this.canvas);
-        let pipeDOWN = new PipeDOWN(this.context, this.sprites, this.canvas);
+        let pipeUP = new PipeUP(this.context, this.sprites, this.canvas, this.debugMode);
+        let pipeDOWN = new PipeDOWN(this.context, this.sprites, this.canvas, this.debugMode);
         pipeUP.posX = this.canvas.width;
         pipeDOWN.posX = this.canvas.width;
         pipeUP.posY = this.getRandomPosY(pipeUP);

@@ -1,7 +1,6 @@
+import { sound } from "../utils/Sound.js";
 export class Score {
     constructor(context, sprites, canvas) {
-        context.font = '900 18px Arial';
-        context.textAlign = 'end';
         this.posX = 10;
         this.posY = 20;
         this.score = 0;
@@ -10,12 +9,16 @@ export class Score {
         this.context = context;
         this.sprites = sprites;
         this.canvas = canvas;
+        this.scoreSound = new sound("../sounds/SFX_Score.wav");
+        this.levelSound = new sound("../sounds/SFX_Level.wav");
     }
     reset() {
         this.score = 0;
         this.level = 1;
     }
     mDraw() {
+        this.context.font = '900 18px Arial';
+        this.context.textAlign = 'end';
         this.context.fillStyle = '#ffffff';
         this.context.fillText( ("Score: " + this.score), this.canvas.width - this.posX, this.posY );
         this.context.strokeText( ("Score: " + this.score), this.canvas.width - this.posX, this.posY );
@@ -51,6 +54,7 @@ export class Score {
         if(this.score > this.bestScore) {
             this.bestScore = this.score;
         }
+        this.scoreSound.play();
         this.print();
     }
     addLevel(xLevel) {
@@ -60,7 +64,7 @@ export class Score {
         } else {
             this.level = this.level + 1;
         }
-
+        this.levelSound.play();
         this.print();
     }
     print() {

@@ -1,5 +1,7 @@
+import { sound } from "../utils/Sound.js";
 class FlappyBird {
-    constructor(context, sprites, canvas) {
+    constructor(context, sprites, canvas, debug=false) {
+        this.debugMode = debug;
         this.sourceX = 0;
         this.sourceY = 0;
         this.width = 34;
@@ -9,7 +11,10 @@ class FlappyBird {
         this.speedX = 0;
         this.speedY = 1;
         this.gravity = 0.2;
-        this.collisionTolerance = 4;
+        this.collisionToleranceX1 = 6;
+        this.collisionToleranceX2 = 5;
+        this.collisionToleranceY1 = 4;
+        this.collisionToleranceY2 = 4;
         this.maxDegree = 15;
         this.currentDegree = 0;
         this.incrementDegree = (15/4);
@@ -21,9 +26,11 @@ class FlappyBird {
         this.delayFrame = 20;
         this.currentTimeFrame = 0;
         this.defaultSourceY = 26;
+        this.flySound = new sound("../sounds/SFX_Jump.wav");
     }
     click(ScreenSpeed) {
         this.speedY = -5 - (ScreenSpeed * 0.40);
+        this.flySound.play();
     }
     update(ScreenSpeed) {
         this.speedY = this.speedY + this.gravity + (ScreenSpeed * 0.05);
@@ -70,6 +77,27 @@ class FlappyBird {
         );
         this.context.restore();
         
+        if(this.debugMode === true){
+            this.debugRect();
+        }
+    }
+    debugRect() {
+        this.context.globalAlpha = 0.5;
+        this.context.fillStyle = '#0000ff';
+        let collisionRect = this.getArea();
+        this.context.fillRect(collisionRect.x1, collisionRect.y1, (collisionRect.x2 - collisionRect.x1), (collisionRect.y2 - collisionRect.y1));
+        
+        this.context.fillStyle = '#000000';
+        this.context.fillRect(0,0,100,50);
+        this.context.globalAlpha = 1.0;
+
+        this.context.font = '8px Arial';
+        this.context.textAlign = 'start';
+        this.context.fillStyle = '#ffffff';
+        this.context.fillText( ("Flappy PosX:         " + this.posX.toFixed(2)), 5 , 10 );
+        this.context.fillText( ("Flappy PosY:         " + this.posY.toFixed(2)), 5 , 25 );
+        this.context.fillText( ("Flappy SpeedY:     " + this.speedY.toFixed(2)), 5 , 40 );
+        
     }
     updateFrame(ScreenSpeed){
         this.currentTimeFrame = ++this.currentTimeFrame % Math.ceil(this.delayFrame / ScreenSpeed);
@@ -80,10 +108,10 @@ class FlappyBird {
     }
     getArea() {
         return {
-            x1: ( this.posX + this.collisionTolerance ),
-            x2: ( (this.posX + this.width) - this.collisionTolerance ),
-            y1: ( this.posY + this.collisionTolerance ),
-            y2: ( (this.posY + this.height) - this.collisionTolerance )
+            x1: ( this.posX + this.collisionToleranceX1 ),
+            x2: ( (this.posX + this.width) - this.collisionToleranceX2 ),
+            y1: ( this.posY + this.collisionToleranceY1 ),
+            y2: ( (this.posY + this.height) - this.collisionToleranceY2 )
         }
     }
 }

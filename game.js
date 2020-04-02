@@ -2,7 +2,7 @@ console.log('[Cris] Flappy Bird');
 
 // VARIABLES
 const sprites = new Image();
-sprites.src = './sprites.png';
+sprites.src = './sprites/sprites.png';
 
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
@@ -10,9 +10,12 @@ const context = canvas.getContext('2d');
 const paddingX = window.innerWidth > 800 ? 100 : 4;
 const paddingY = 4;
 
+const debug = false;
+
 // Screen Size
 const height = (window.innerHeight+paddingY) > 600 ? 600 : (window.innerHeight-paddingY) < (480+paddingY) ? 480 : (window.innerHeight-paddingY);
-const width = (window.innerWidth-paddingX) < 320 ? 320 : (window.innerWidth-paddingX);
+const width = (window.innerWidth-paddingX) < 320 ? 320 : (window.innerWidth+paddingX) > (16/9*height) ? (16/9*height) : (window.innerWidth-paddingY)
+//const width = (window.innerWidth-paddingX) < 320 ? 320 : (window.innerWidth-paddingX);
 context.canvas.width =  width;
 context.canvas.height = height
 
@@ -20,7 +23,12 @@ let screenEnabled = {};
 
 // FUNCTIONS
 import { isCollision } from "./utils/Collision.js";
+import { sound } from "./utils/Sound.js";
 
+//[Music]
+const musicPath = ["../sounds/christmas_synths.mp3", "../sounds/pixel_adventures.mp3"];
+const music = new sound(musicPath[Math.floor(Math.random() * musicPath.length)], true);
+  
 // OBJECTS 
 // [Score]
 import { Score } from "./classes/Score.js";
@@ -40,24 +48,25 @@ const background = new Background(context, sprites, canvas);
 
 // [Floor]
 import { Floor } from "./classes/Floor.js";
-const floor = new Floor(context, sprites, canvas);
+const floor = new Floor(context, sprites, canvas, debug);
 
 // [Pipes]
 import { DoublePipe } from "./classes/DoublePipe.js";
-const pipes = new DoublePipe(context, sprites, canvas, floor);
+const pipes = new DoublePipe(context, sprites, canvas, floor, debug);
 
 // [FlappyBird]
 import {FlappyBird} from "./classes/FlappyBird.js";
-const flappyBird = new FlappyBird(context, sprites, canvas);
-
+const flappyBird = new FlappyBird(context, sprites, canvas, debug);
 
 
 // [Screens]
 const Screens = {
   START: {
     speed: 0,
+    startSound: new sound("../sounds/SFX_Start.wav"),
     click() {
-
+      this.startSound.play();
+      music.play();
       changeToScreen(Screens.GAME)
     },
     mDraw() {
@@ -73,10 +82,11 @@ const Screens = {
 Screens.GAME = {
   speed: 2,
   stoped: false,
+  impactSound: new sound("../sounds/SFX_Impact.wav"),
+  topImpactSound: new sound("../sounds/SFX_Top_Impact.wav"),
   click() {
     if(!this.stoped) {
       flappyBird.click(this.speed);
-      // console.log("Flappy PosY:", flappyBird.posY, "Flappy PosX:", flappyBird.posX)
     }
   },
   update() {
@@ -100,6 +110,8 @@ Screens.GAME = {
     this.stoped = false;
   },
   stopGame() {
+    this.impactSound.play();
+    music.stop();
     console.log("Speed:", this.speed);
     screenEnabled.speed = 0;
     flappyBird.stop();
@@ -124,6 +136,7 @@ Screens.GAME = {
       if( flappyBird.speedY < 0) {
         flappyBird.speedY = 0;
       }
+      this.topImpactSound.play();
       console.log("Colisão - Bateu no Top");
     }
     
@@ -149,6 +162,7 @@ Screens.GAMEOVER = {
     score.reset();
     Screens.GAME.reset();
     
+    music.play();
     changeToScreen(Screens.GAME)
   },
   mDraw() {
@@ -179,7 +193,7 @@ window.addEventListener('click', function() {
   }
 });
 
-document.body.onkeyup = function(e){
+document.body.onkeypress = function(e){
   if(e.keyCode == 32){
     if(screenEnabled.click) {
       screenEnabled.click();
