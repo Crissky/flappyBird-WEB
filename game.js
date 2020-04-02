@@ -27,6 +27,7 @@ import { sound } from "./utils/Sound.js";
 
 //[Music]
 const musicPath = ["../sounds/christmas_synths.mp3", "../sounds/pixel_adventures.mp3"];
+//const musicPath = ["https://opengameart.org/sites/default/files/Christmas%20synths.ogg", "https://opengameart.org/sites/default/files/Pixel%20adventures.mp3"];
 const music = new sound(musicPath[Math.floor(Math.random() * musicPath.length)], true);
   
 // OBJECTS 
