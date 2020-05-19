@@ -158,7 +158,7 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-window.addEventListener('click', function() {
+window.addEventListener('mousedown', function() {
   if(screenEnabled.click) {
     screenEnabled.click();
   }
